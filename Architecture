@@ -1,0 +1,25 @@
+The architecture that we are going to use in this project is about the pattern, Model–view–controller (MVC) is a software design pattern commonly used for developing user interfaces
+that divide the related program logic into three interconnected elements. This is done to separate internal representations of information from the ways information is presented to
+and accepted from the user.
+
+Traditionally used for desktop graphical user interfaces (GUIs), this pattern became popular for designing web applications.Popular programming languages have MVC frameworks that
+facilitate implementation of the pattern. 
+
+Model
+    The central component of the pattern. It is the application's dynamic data structure, independent of the user interface. It directly manages the data, logic and rules of 
+    the application.
+View
+    Any representation of information such as a chart, diagram or table. Multiple views of the same information are possible, such as a bar chart for management and a tabular view 
+    for accountants.
+Controller
+    Accepts input and converts it to commands for the model or view.
+
+In addition to dividing the application into these components, the model–view–controller design defines the interactions between them.
+
+    The model is responsible for managing the data of the application. It receives user input from the controller.
+    The view renders presentation of the model in a particular format.
+    The controller responds to the user input and performs interactions on the data model objects. The controller receives the input, optionally validates it and then passes the
+    input to the model.
+
+As with other software patterns, MVC expresses the "core of the solution" to a problem while allowing it to be adapted for each system.Particular MVC designs can vary significantly
+from the traditional description here.
