@@ -84,25 +84,29 @@ public class Controller {
 		 updateStackGraphically();
 	  }
 	 
-	 private void addSubstractOperation(ComplexNumber ComplexNumber1, ComplexNumber ComplexNumber2, String op){
+	 public void addSubstractOperation(ComplexNumber ComplexNumber1, ComplexNumber ComplexNumber2, String op){
 	        
 	        switch (op){
 	            
 	           case "+":
 	        	   ComplexNumber result = new ComplexNumber((ComplexNumber1.getReal()+ComplexNumber2.getReal()),(ComplexNumber1.getImaginary()+ComplexNumber2.getImaginary()));
 	        	   model.getStack().add(result);
+	        	   updateStackGraphically();
 	        	   break;
 	        	  
 	           case "-":
 	        	   ComplexNumber result1 = new ComplexNumber((ComplexNumber1.getReal()-ComplexNumber2.getReal()),(ComplexNumber1.getImaginary()-ComplexNumber2.getImaginary()));
 	        	   model.getStack().add(result1);
+	        	   updateStackGraphically();      
+	        	   break;
 	        	   
+	   	        
 	        }
 	        updateStackGraphically();      
 	        
 	    }
 	    
-	    private void squareRootOperation(ComplexNumber ComplexNumber){
+	    public void squareRootOperation(ComplexNumber ComplexNumber){
 	        double mod = Math.sqrt(Math.pow(ComplexNumber.getReal(),2))+(Math.pow(ComplexNumber.getImaginary(),2));
 	        ComplexNumber result = new ComplexNumber(mod*(Math.cos(ComplexNumber.getReal())),mod*(Math.sin(ComplexNumber.getImaginary())));
 	        model.getStack().add(result);
