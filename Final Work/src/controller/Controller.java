@@ -3,12 +3,16 @@ package controller;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import model.Stack;
 
@@ -39,21 +43,79 @@ public class Controller {
 		view.getBtnEnter().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				enterNumberStack();
+				view.getTextField().requestFocus();
 			}
 		});
+		view.getPantalla().getCalculo().addKeyListener(new KeyAdapter() {
+        	@Override
+        	public void keyReleased(KeyEvent arg0) {
+        		if(arg0.getKeyCode()==KeyEvent.VK_ENTER)
+        			enterNumberStack();
+        			view.getTextField().requestFocus();
+        	}
+        });
+		
 		view.addWindowListener (new CalculadoraControladorWindowListener());
         view.setActionListener (new CalculadoraControladorActionListener());
 		
 	}
 
-
-	private void enterNumberStack() {
-		ComplexNumber cn=new ComplexNumber(view.getTextFieldString());
-		model.getStack().add(cn);
-		System.out.println(cn.getReal()+" imagi="+cn.getImaginary());
-		System.out.println(model.getStack().top().getReal()+" imagi="+model.getStack().top().getImaginary());
-		updateStackGraphically();
-		view.getTextField().setText("");
+	private void updateVariableTable(String va) {
+		
+        for(int i=0;i<26;i++) {
+        	if((""+view.getTable().getValueAt(i, 0)).equals(va)) {
+        		view.getTable().setValueAt(model.getVariable(va).getStringNumber(), i, 1);
+        	}		
+        }
+        
+	}
+	
+	private void enterNumberStack() { 
+		String txScreen=view.getTextFieldString();
+		if(txScreen.length()==2 && Character.isLetter(txScreen.charAt(1))) {//Operations with variables
+			String op=""+txScreen.charAt(0);
+			String va=""+txScreen.charAt(1);
+			
+			switch(op) {
+				case "+":
+					// variable + pila
+					ComplexNumber res1=addSubstractOperation(model.getStack().getElement(model.getStack().top), model.getVariable(va), "+");
+					model.setVariable(va,res1);
+					updateVariableTable(va);
+					//updateStackGraphically();
+					view.getTextField().setText("");
+					break;
+				case "-":
+					// variable - pila
+					ComplexNumber res2=addSubstractOperation(model.getStack().getElement(model.getStack().top), model.getVariable(va), "-");
+					model.setVariable(va,res2);
+					updateVariableTable(va);
+					//updateStackGraphically();
+					view.getTextField().setText("");
+					break;
+				case ">":
+					model.setVariable(va, model.getStack().getElement(model.getStack().top));
+					updateVariableTable(va);
+					updateStackGraphically();
+					view.getTextField().setText("");
+					break;
+				case "<":
+					model.getStack().add(model.getVariable(va));
+					updateVariableTable(va);
+					updateStackGraphically();
+					view.getTextField().setText("");
+					break;
+			}
+		}
+		else { //ComplexNumber
+			ComplexNumber cn=new ComplexNumber(view.getTextFieldString());
+			model.getStack().add(cn);
+			System.out.println(cn.getReal()+" imagi="+cn.getImaginary());
+			System.out.println(model.getStack().top().getReal()+" imagi="+model.getStack().top().getImaginary());
+			updateStackGraphically();
+			view.getTextField().setText("");
+		}
+		
 	}
 
 	public void multiply(ComplexNumber a, ComplexNumber b) {
@@ -84,25 +146,22 @@ public class Controller {
 		 updateStackGraphically();
 	  }
 	 
-	 public void addSubstractOperation(ComplexNumber ComplexNumber1, ComplexNumber ComplexNumber2, String op){
+	 public ComplexNumber addSubstractOperation(ComplexNumber ComplexNumber1, ComplexNumber ComplexNumber2, String op){
 	        
 	        switch (op){
 	            
 	           case "+":
 	        	   ComplexNumber result = new ComplexNumber((ComplexNumber1.getReal()+ComplexNumber2.getReal()),(ComplexNumber1.getImaginary()+ComplexNumber2.getImaginary()));
-	        	   model.getStack().add(result);
-	        	   updateStackGraphically();
-	        	   break;
+	        	   //model.getStack().add(result);
+	        	   return result;
 	        	  
 	           case "-":
 	        	   ComplexNumber result1 = new ComplexNumber((ComplexNumber1.getReal()-ComplexNumber2.getReal()),(ComplexNumber1.getImaginary()-ComplexNumber2.getImaginary()));
-	        	   model.getStack().add(result1);
-	        	   updateStackGraphically();      
-	        	   break;
-	        	   
-	   	        
+	        	   //model.getStack().add(result1);
+	        	   return result1;
+	        	 
 	        }
-	        updateStackGraphically();      
+	        return null;
 	        
 	    }
 	    
@@ -115,10 +174,15 @@ public class Controller {
 	    public void updateStackGraphically() {
 	    	view.getPanelStack().removeAll();
 	    	ComplexNumber cn;
-	    	for (int i = 0; i <= model.getStack().top; i++) {
-	    		cn=(ComplexNumber)model.getStack().getElement(i);
-	    		stackGraphically(cn.getStringNumber());
-			}
+	    	if(!model.getStack().isEmpty())
+		    	for (int i = 0; i <= model.getStack().top; i++) {
+		    		cn=(ComplexNumber)model.getStack().getElement(i);
+		    		stackGraphically(cn.getStringNumber());
+				}
+	    	else {
+	    		view.getContentPane().validate(); 
+				view.getContentPane().repaint();
+	    	}
 	    }
 	    public void stackGraphically(String text) {
 	    	
@@ -200,12 +264,14 @@ public class Controller {
 	                	break;
 	                
 	                case "+":
-	                	addSubstractOperation(model.getStack().getElement(top-1),model.getStack().getElement(top),"+" );
-	                    break;
+	                	model.getStack().add(addSubstractOperation(model.getStack().getElement(top-1),model.getStack().getElement(top),"+" ));
+	                	updateStackGraphically();
+	                	break;
 	                    
 	                case "-":
-	                	addSubstractOperation(model.getStack().getElement(top-1),model.getStack().getElement(top),"-" );
-	                    break;    
+	                	model.getStack().add(addSubstractOperation(model.getStack().getElement(top-1),model.getStack().getElement(top),"-" ));
+	                	updateStackGraphically();
+	                	break;    
 	                    
 	                case "*":
 	                	multiply(model.getStack().getElement(top-1),model.getStack().getElement(top));
@@ -221,6 +287,39 @@ public class Controller {
 	                    
 	                case "conj":
 	                	conjugate(model.getStack().getElement(top));
+	                	break;
+	                	
+	                case "CLEAR":
+	                	if(!model.getStack().isEmpty()) {
+	                		for(int i=0; i<=top;i++)
+	                			model.getStack().remove();
+	                	}
+	                	updateStackGraphically();
+	                	break;
+	                	
+	                case "DUP":
+	                	model.getStack().add(model.getStack().top());
+	                	updateStackGraphically();
+	                	break;
+	                	
+	                case "OVER":
+	                	model.getStack().add(model.getStack().getElement(top-1));
+	                	updateStackGraphically();
+	                	break;
+	                	
+	                case "DROP":
+	                	model.getStack().remove();
+	                	updateStackGraphically();
+	                	break;
+	                
+	                case "SWAP":
+	                	ComplexNumber ult=model.getStack().remove();
+	                	ComplexNumber pnult=model.getStack().remove();
+	                	model.getStack().add(ult);
+	                	model.getStack().add(pnult);
+	                	
+	                	updateStackGraphically();
+	                	break;
 	                default:
 	                    System.out.println ("CalculadoraController :: Not < " + command + " > no reconocido.");
 	                    break;
