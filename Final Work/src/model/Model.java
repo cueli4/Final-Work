@@ -1,10 +1,14 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Model {
 
 	Stack<ComplexNumber> stack;
+	ArrayList<UserOperation> stackOperations;
 	public Model() {
 		stack= new Stack<ComplexNumber>();
+		stackOperations= new ArrayList<UserOperation>();
 		inizializate();
 	}
 	
@@ -14,6 +18,14 @@ public class Model {
 		return this.stack;
 	}
 	
+	
+	
+	public ArrayList<UserOperation> getStackOperations() {
+		return stackOperations;
+	}
+
+
+
 	private ComplexNumber a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z;
 	
 	///cont

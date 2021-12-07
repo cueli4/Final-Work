@@ -29,6 +29,7 @@ import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.BevelBorder;
+import javax.swing.SwingConstants;
 
 public class View extends JFrame {
 
@@ -44,8 +45,11 @@ public class View extends JFrame {
     private NumbersPanel numeros;
     private OperationsPanel operaciones;
     private ScreenPanel pantalla;
+    private UserDefinedOperationsPanel defined;
     private StackManipulationPanel manipulation;
     private JTable table;
+    private ComplexOperationsPanel complexOperations;
+    private JTable tableOperations;
 
 	public JButton getBtnEnter() {
 		return btnEnter;
@@ -90,13 +94,23 @@ public class View extends JFrame {
 		
         
         operaciones = new OperationsPanel();
-        operaciones.setBounds(327, 114, 123, 266);
+        operaciones.setBounds(327, 114, 144, 266);
         contentPane.add (operaciones, BorderLayout.SOUTH);
         contentPane.setSize(400, 400);
+        
+        complexOperations = new ComplexOperationsPanel();
+        complexOperations.setBounds(10, 408, 290, 230);
+        contentPane.add (complexOperations, BorderLayout.SOUTH);
+        contentPane.setSize(500, 500);
         
         manipulation=new StackManipulationPanel();
         manipulation.setBounds(696, 75, 98, 306);
         contentPane.add (manipulation, BorderLayout.SOUTH);
+        
+        defined = new UserDefinedOperationsPanel();
+        defined.setBounds(327, 406, 144, 232);
+        contentPane.add (defined, BorderLayout.SOUTH);
+
         
         table = new JTable();
         table.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -156,9 +170,27 @@ public class View extends JFrame {
         table.setBounds(864, 75, 313, 416);
         contentPane.add(table);
         
+        JLabel lblVariables = new JLabel("Variables");
+        lblVariables.setHorizontalAlignment(SwingConstants.CENTER);
+        lblVariables.setFont(new Font("Tahoma", Font.BOLD, 24));
+        lblVariables.setBounds(973, 29, 138, 30);
+        contentPane.add(lblVariables);
         
+        tableOperations = new JTable();
+        tableOperations.setModel(new DefaultTableModel(
+        	new Object[][] {
+        		{"Operations name"},
+        	},
+        	new String[] {
+        		"Operations name"
+        	}
+        ));
+        tableOperations.setForeground(Color.BLACK);
+        tableOperations.setFont(new Font("Sitka Small", Font.PLAIN, 18));
+        tableOperations.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+        tableOperations.setBounds(481, 411, 191, 227);
+        contentPane.add(tableOperations);
         
-        pantalla.requestFocus();
 	}
 	
 	public String getTextFieldString() {
@@ -186,16 +218,34 @@ public class View extends JFrame {
 		return operaciones;
 	}
 	
+	public ComplexOperationsPanel getComplexOperations() {
+		return complexOperations;
+	}
+	
 	public ScreenPanel getPantalla() {
 		return pantalla;
 	}
 	public JTable getTable() {
 		return this.table;
 	}
-	public void setActionListener (ActionListener actionListener)
+	
+	
+	
+	public JTable getTableOperations() {
+		return tableOperations;
+	}
+
+	public void setTableOperations(JTable tableOperations) {
+		this.tableOperations = tableOperations;
+	}
+
+	public void setActionListener (ActionListener actionListener, ActionListener al2)
     {
         numeros.setActionListener (actionListener);
         operaciones.setActionListener (actionListener);
         manipulation.setActionListener(actionListener);
+        complexOperations.setActionListener(actionListener);
+        defined.setActionListener(al2);
     }
+
 }
